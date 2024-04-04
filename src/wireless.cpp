@@ -18,7 +18,7 @@ void Wireless::transmit(const char *label, double data)
 }
 
 
-Wireless::Wireless(ScreenMessager* screenMessager) 
+Wireless::Wireless(ScreenMessager *screenMessager)
 {
     this->screenMessager = screenMessager;
 }
@@ -30,26 +30,39 @@ bool Wireless::begin(int mode)
     return true;
 }
 
+void Wireless::_processBuffer()
+{
+    Serial.println(buffer);
+    screenMessager->write(buffer, i+1);
+    if(strstr(buffer,"␅") != nullptr) {
+        char idBuff[5];
+        memcpy(idBuff, &buffer[3], 3);
+        idBuff[4] = '\0';
+        Serial1.print("␆");
+        Serial1.println(idBuff);
+    }
+    i = 0;
+}
+
 
 void Wireless::update()
 {
+    unsigned long current_millis = millis();
+
     if (Serial1.available()) {
-        char buffer[128];
-        int i = 0;
-        do {
-            char c = Serial1.read();
-            buffer[i++] = c;
-            delay(10);
-        } while (Serial1.available());
-        buffer[i] = '\0';
-        // SerialUSB.println(buffer);
-        screenMessager->write(buffer, i+1);
-        if(strstr(buffer,"␅") != nullptr) {
-            char idBuff[5];
-            memcpy(idBuff, &buffer[3], 3);
-            idBuff[4] = '\0';
-            Serial1.print("␆");
-            Serial1.println(idBuff);
+        read_timout_millis = current_millis;
+
+        char c = Serial1.read();
+        buffer[i++] = c;
+
+        if (c == '\n' || c == '\0' ||  c == '\r' || i >= SERIAL_IN_BUFFER) {
+            buffer[i] = '\0';
+            _processBuffer();
         }
+    }
+    else if (current_millis > read_timout_millis + READ_TIMOUT_MS && i > 0) {
+        read_timout_millis = current_millis;
+        buffer[i] = '\0';
+        _processBuffer();
     }
 }

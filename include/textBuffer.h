@@ -4,7 +4,7 @@
 #include <Arduino.h>
 
 #define LINE_LEN 21
-#define ROW_COUNT 8
+#define ROW_COUNT 64
 
 class TextBuffer
 {
