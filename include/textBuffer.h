@@ -3,15 +3,14 @@
 
 #include <Arduino.h>
 
-#define LINE_LEN 21
-#define ROW_COUNT 64
 
+
+template<int _Size, int _LineLen>
 class TextBuffer
 {
     uint8_t head = 0;
     uint8_t tail = 0;
-    static const size_t size = ROW_COUNT;
-    char lines[size][LINE_LEN];
+    char lines[_Size][_LineLen];
     size_t len = 0;
 public:
     int getline(char* buff);
@@ -19,5 +18,53 @@ public:
     bool available();
     int freeSpace();
 };
+
+template<int _Size, int _LineLen>
+int TextBuffer<_Size,_LineLen>::putline(char* item) 
+{
+   if ((head + 1) % _Size == tail)
+   {
+      return 0;
+   }
+
+   memcpy(lines[head], item, _LineLen);
+
+   head = (head + 1) % _Size;
+   return 1;
+}
+
+template<int _Size, int _LineLen>
+int TextBuffer<_Size,_LineLen>::getline(char * value) 
+{
+  if (tail == head)
+  {
+     return 0;
+  }
+
+  memcpy(value, lines[tail], _LineLen);
+
+  tail = (tail + 1) % _Size;
+  return 1;
+}
+
+template<int _Size, int _LineLen>
+bool TextBuffer<_Size,_LineLen>::available()
+{
+    return tail != head;
+}
+
+template<int _Size, int _LineLen>
+int TextBuffer<_Size,_LineLen>::freeSpace()
+{
+   if (head >= tail) {
+      return _Size - (head - tail) - 1;
+   } else {
+      return head - head - 1;
+   }
+}
+
+
+
+
 
 #endif

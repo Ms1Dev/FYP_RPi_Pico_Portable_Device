@@ -67,7 +67,7 @@ void TextScroller::write(char* text, size_t textlen) {
 }
 
 
-TextBuffer* TextScroller::getBuffer()
+TextBuffer<ROW_COUNT,LINE_LEN>* TextScroller::getBuffer()
 {
     return &buffer;
 }
