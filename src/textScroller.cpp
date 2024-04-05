@@ -21,7 +21,7 @@ bool TextScroller::begin()
 
 void TextScroller::update()
 {
-	if (newline) {
+	if (writing) {
 		++current_top += fast_scroll;
 		if (current_top >= 0x80) {
 			current_top = 0x40;
@@ -33,17 +33,17 @@ void TextScroller::update()
 			display.setCursor(0, screen_top);
 			display.print(next_line);
 			display.display();
-			newline = false;
+			writing = false;
 		}
 	}
 
-	if (buffer.available() > 0 && !newline) {
-		char buf[22];
+	if (buffer.available() > 0 && !writing) {
+		char buf[line_len +1];
 		buffer.getline(buf);
-		_write(buf, 21);
+		_write(buf, line_len);
 		screen_top = current_top - 0x40;
 		display.fillRect(0, screen_top, SCREEN_WIDTH, 8, BLACK);
-		newline = true;
+		writing = true;
 	}
 
 }
@@ -53,22 +53,16 @@ void TextScroller::_write(char* text, size_t textlen) {
 	screen_top = current_top - 0x40;
 	display.fillRect(0, screen_top, SCREEN_WIDTH, 8, BLACK);
 	memcpy(next_line, text, textlen);
-	next_line[LINE_LEN] = '\0';
+	next_line[line_len] = '\0';
 }
 
 
-void TextScroller::write(char* text, size_t textlen) {
-	int lines = textlen / LINE_LEN;
-	if (buffer.freeSpace() > lines) {
+void TextScroller::putText(char* text, size_t textlen) {
+	int lines = textlen / line_len;
+	if (buffer.freespace() > lines) {
 		for (int i = 0; i <= lines; i ++) {
-			buffer.putline(text + i * LINE_LEN);
+			buffer.putline(text + i * line_len);
 		}
 	}
-}
-
-
-TextBuffer<ROW_COUNT,LINE_LEN>* TextScroller::getBuffer()
-{
-    return &buffer;
 }
 

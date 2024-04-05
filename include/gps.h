@@ -4,10 +4,13 @@
 #include <TinyGPS++.h>
 #include "nmeaSentence.h"
 
+#define GPS_RX_PIN 9
+#define GPS_TX_PIN 8
+
+
 class GPS
 {
 private:
-    bool hasNewData = false;
     TinyGPSPlus gps;
     double lat,lng;
 public:
@@ -15,7 +18,7 @@ public:
     void begin();
     void update();
     bool dataAvailable();
-    void readDataIntoBuffer(char* buffer, int bufferSize);
+    void getData(double &lat, double &lng);
 };
 
 #endif

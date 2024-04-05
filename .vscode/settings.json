@@ -3,6 +3,11 @@
         "array": "cpp",
         "string_view": "cpp",
         "initializer_list": "cpp",
-        "*.tpp": "cpp"
+        "*.tpp": "cpp",
+        "*.tcc": "cpp",
+        "random": "cpp",
+        "iosfwd": "cpp",
+        "limits": "cpp",
+        "streambuf": "cpp"
     }
 }

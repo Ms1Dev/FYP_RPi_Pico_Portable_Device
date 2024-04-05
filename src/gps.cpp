@@ -8,15 +8,15 @@ GPS::GPS()
 
 void GPS::begin()
 {
-    Serial2.setRX(9);
-    Serial2.setTX(8);
+    Serial2.setRX(GPS_RX_PIN);
+    Serial2.setTX(GPS_TX_PIN);
     Serial2.begin(9600);
 }
 
 
 void GPS::update()
 {
-    if (Serial2.available()) {
+    while (Serial2.available()) {
         gps.encode(Serial2.read());
     }
 }
@@ -29,9 +29,8 @@ bool GPS::dataAvailable()
 }
 
 
-void GPS::readDataIntoBuffer(char *buffer, int bufferSize)
+void GPS::getData(double &lat, double &lng)
 {
     lat = gps.location.lat();
     lng = gps.location.lng();
-    sprintf(buffer, "G%f,%f", lat, lng);
 }

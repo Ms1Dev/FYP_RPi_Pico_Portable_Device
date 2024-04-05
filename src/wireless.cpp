@@ -33,7 +33,7 @@ bool Wireless::begin(int mode)
 void Wireless::_processBuffer()
 {
     Serial.println(buffer);
-    screenMessager->write(buffer, i+1);
+    screenMessager->putText(buffer, i+1);
     if(strstr(buffer,"␅") != nullptr) {
         char idBuff[5];
         memcpy(idBuff, &buffer[3], 3);

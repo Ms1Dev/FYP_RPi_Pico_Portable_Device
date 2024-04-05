@@ -5,8 +5,8 @@
 #include "screenMessager.h"
 
 #define SERIAL_IN_BUFFER 512
-
 #define READ_TIMOUT_MS 20
+
 
 class Wireless 
 {

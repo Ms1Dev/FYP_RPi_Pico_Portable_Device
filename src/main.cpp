@@ -3,57 +3,68 @@
 #include "textScroller.h"
 #include "textBuffer.h"
 #include "gps.h"
-
+#include "barometric.h"
 
 #define TX_BUFF_ROWS 8
-#define TX_BUFF_COLS 128
+#define TX_LINE_LEN 48
 
 
 TextScroller textScroller;
 Wireless wireless(&textScroller);
 GPS gps;
+Barometric barometric;
 
-
-volatile int ctr = 0;
-
-TextBuffer<TX_BUFF_ROWS, TX_BUFF_COLS> transmitBuffer;
+TextBuffer<TX_BUFF_ROWS, TX_LINE_LEN> transmitBuffer;
 
 
 void setup() 
 {
 	Serial.begin(9600);
 	while(!Serial);
-	Serial.println("Start");
 	wireless.begin(0);
 }
+
 
 void loop() 
 {
 	wireless.update();
 
 	if (transmitBuffer.available()) {
-		char b[128];
-		transmitBuffer.getline(b);
-		Serial.println(b);
+		char buffer[TX_LINE_LEN];
+		transmitBuffer.getline(buffer);
+		wireless.transmit(buffer, TX_LINE_LEN);
+		// Serial.println(buffer);
 	}
 }
 
 
 void setup1() 
 {
-	// textScroller.begin();
+	barometric.begin();
+	textScroller.begin();
 	gps.begin();
 }
 
 
 void loop1()
 {
-	// textScroller.update();
+	barometric.update();
+	textScroller.update();
 	gps.update();
+	
+	if (barometric.dataReady()) {
+		char buffer[TX_LINE_LEN];
+		double press,temp;
+		barometric.getData(press,temp);
+		sprintf(buffer, "P=%f\nT=%f", press, temp);
+		transmitBuffer.putline(buffer);
+	}
 
 	if (gps.dataAvailable()) {
-		char buffer[128];
-		gps.readDataIntoBuffer(buffer, BUFFER_SIZE);
+		char buffer[TX_LINE_LEN];
+		double lat,lng;
+		gps.getData(lat,lng);
+		sprintf(buffer, "G=%f,%f", lat, lng);
 		transmitBuffer.putline(buffer);
 	}
 }

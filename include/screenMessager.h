@@ -5,7 +5,7 @@
 class ScreenMessager 
 {
 public:
-    virtual void write(char* text, unsigned int textlen) = 0;
+    virtual void putText(char* text, unsigned int textlen) = 0;
 };
 
 

@@ -1,87 +1,48 @@
 #include "barometric.h"
-#include <Wire.h>
+
+#include <Arduino.h>
 
 
-Barometric::Barometric(/* args */) : pressure(0x77)
+Barometric::Barometric() : ms5611(MS5611_DEFAULT_ADDRESS)
 {}
 
+
 void Barometric::begin()
-{
-    pressure.setOversampling(OSR_ULTRA_HIGH);
-    pressure.begin();
+{    
+    Wire.setSDA(MS5611_SDA_PIN);
+    Wire.setSCL(MS5611_SCL_PIN); 
+    Wire.begin();
+    ms5611.setOversampling(OSR_ULTRA_HIGH);
+    ms5611.begin();
 }
+
 
 bool Barometric::dataReady()
 {
-    return data_ready;
+    return data_ready && !in_error;
 }
 
-bool Barometric::getData(double &press, double &temp)
+
+void Barometric::getData(double &press, double &temp)
 {
-    press = press_reading;
-    temp = temp_reading;
-    data_ready = false;
-    return !in_error;
+    press = press_total / read_count;
+    temp = temp_total / read_count; 
+    data_ready = temp_total = press_total = read_count = 0;
 }
+
 
 void Barometric::update()
 {
-    pressure.read();
-    temp_reading = pressure.getTemperature();
-    press_reading = pressure.getPressure();
-    data_ready = true;
-    
-    // unsigned long current_millis = millis();
-    
+    in_error = ms5611.read() != MS5611_READ_OK;
+    if (!in_error) {
+        temp_total += ms5611.getTemperature();
+        press_total += ms5611.getPressure();
+        read_count++;
+    }
 
-    // if (state == REQUEST_TEMP) {
-    //     wait_millis = pressure.startTemperature();
-    //     if (wait_millis != 0) {
-    //         in_error = false;
-    //         state = RECEIVE_TEMP;
-    //         state_change_millis = current_millis;
-    //     }
-    // }
-
-    // if (state == RECEIVE_TEMP && current_millis > state_change_millis + wait_millis) {
-
-    //     if (pressure.getTemperature(temp) != 0) {
-    //         in_error = false;
-    //         state = REQUEST_PRES;
-    //     }
-    //     else {
-    //         state = REQUEST_TEMP;
-    //     }
-    // }
-
-    // if (state == REQUEST_PRES) {
-
-    //     wait_millis = pressure.startPressure(3);
-
-    //     if (wait_millis != 0) {
-    //         in_error = false;
-    //         state = RECEIVE_PRES;
-    //         state_change_millis = current_millis;
-    //     }
-    // }
-
-    // if (state == RECEIVE_PRES && current_millis > state_change_millis + wait_millis) {
-
-    //     if (pressure.getPressure(press,temp) != 0) {
-    //         in_error = false;
-    //         read_count++;
-    //         press_total += press;
-    //         temp_total += temp;
-    //     }
-    //     state = REQUEST_TEMP;
-    // }
-
-    // if (read_count >= min_samples_per_result) {
-    //     press_reading = press_total / read_count;
-    //     temp_reading = temp_total / read_count;
-    //     temp_total = 0;
-    //     press_total = 0;
-    //     read_count = 0;
-    //     data_ready = true;
-    // }
+    unsigned long current_millis = millis();
+    if (current_millis >= last_read_millis + read_delay_ms) {
+        last_read_millis = current_millis;
+        data_ready = true;
+    }
 }

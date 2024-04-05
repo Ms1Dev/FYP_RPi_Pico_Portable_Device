@@ -4,7 +4,6 @@
 #include <Arduino.h>
 
 
-
 template<int _Size, int _LineLen>
 class TextBuffer
 {
@@ -16,8 +15,9 @@ public:
     int getline(char* buff);
     int putline(char* line);
     bool available();
-    int freeSpace();
+    int freespace();
 };
+
 
 template<int _Size, int _LineLen>
 int TextBuffer<_Size,_LineLen>::putline(char* item) 
@@ -33,6 +33,7 @@ int TextBuffer<_Size,_LineLen>::putline(char* item)
    return 1;
 }
 
+
 template<int _Size, int _LineLen>
 int TextBuffer<_Size,_LineLen>::getline(char * value) 
 {
@@ -47,14 +48,16 @@ int TextBuffer<_Size,_LineLen>::getline(char * value)
   return 1;
 }
 
+
 template<int _Size, int _LineLen>
 bool TextBuffer<_Size,_LineLen>::available()
 {
     return tail != head;
 }
 
+
 template<int _Size, int _LineLen>
-int TextBuffer<_Size,_LineLen>::freeSpace()
+int TextBuffer<_Size,_LineLen>::freespace()
 {
    if (head >= tail) {
       return _Size - (head - tail) - 1;
@@ -62,9 +65,6 @@ int TextBuffer<_Size,_LineLen>::freeSpace()
       return head - head - 1;
    }
 }
-
-
-
 
 
 #endif
