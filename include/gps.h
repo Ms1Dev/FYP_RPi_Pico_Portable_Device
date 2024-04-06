@@ -12,7 +12,7 @@ class GPS
 {
 private:
     TinyGPSPlus gps;
-    double lat,lng;
+    double _lat,_lng;
 public:
     GPS();
     void begin();

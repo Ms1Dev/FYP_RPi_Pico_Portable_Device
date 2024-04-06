@@ -33,7 +33,7 @@ void loop()
 		char buffer[TX_LINE_LEN];
 		transmitBuffer.getline(buffer);
 		wireless.transmit(buffer, TX_LINE_LEN);
-		// Serial.println(buffer);
+		Serial.println(buffer);
 	}
 }
 
@@ -56,7 +56,7 @@ void loop1()
 		char buffer[TX_LINE_LEN];
 		double press,temp;
 		barometric.getData(press,temp);
-		sprintf(buffer, "P=%f\nT=%f", press, temp);
+		sprintf(buffer, "P=%f\nT=%.2f", press, temp);
 		transmitBuffer.putline(buffer);
 	}
 

@@ -9,8 +9,6 @@ Barometric::Barometric() : ms5611(MS5611_DEFAULT_ADDRESS)
 
 void Barometric::begin()
 {    
-    Wire.setSDA(MS5611_SDA_PIN);
-    Wire.setSCL(MS5611_SCL_PIN); 
     Wire.begin();
     ms5611.setOversampling(OSR_ULTRA_HIGH);
     ms5611.begin();

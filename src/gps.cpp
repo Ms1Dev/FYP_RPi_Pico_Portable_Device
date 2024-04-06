@@ -25,12 +25,12 @@ void GPS::update()
 bool GPS::dataAvailable()
 {
     if (!gps.location.isUpdated() || !gps.location.isValid()) return false;
-    return lng != gps.location.lng() && lat != gps.location.lat();
+    return _lng != gps.location.lng() && _lat != gps.location.lat();
 }
 
 
 void GPS::getData(double &lat, double &lng)
 {
-    lat = gps.location.lat();
-    lng = gps.location.lng();
+    _lat = lat = gps.location.lat();
+    _lng = lng = gps.location.lng();
 }

@@ -4,10 +4,6 @@
 #include <MS5611.h>
 #include <Wire.h>
 
-#define MS5611_SDA_PIN 12
-#define MS5611_SCL_PIN 13
-
-
 class Barometric
 {
 private:
