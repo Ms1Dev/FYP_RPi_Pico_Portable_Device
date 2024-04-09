@@ -14,7 +14,8 @@ bool TextScroller::begin()
 	display.setTextSize(1);
 	display.setTextColor(SSD1306_WHITE);
 	display.clearDisplay();
-	display.drawBitmap(32,0,ntu_logo_bitmap,NTU_LOGO_WIDTH,NTU_LOGO_HEIGHT, WHITE);
+	const int x = (SCREEN_WIDTH - NTU_LOGO_WIDTH) / 2;
+	display.drawBitmap(x,0,ntu_logo_bitmap,NTU_LOGO_WIDTH,NTU_LOGO_HEIGHT, WHITE);
 	display.display();
 	display.setTextWrap(false);
 	return true;

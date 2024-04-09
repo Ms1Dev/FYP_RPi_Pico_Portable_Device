@@ -9,6 +9,8 @@
 #define TX_LINE_LEN 48
 
 
+// #define DEBUG
+
 TextScroller textScroller;
 Wireless wireless(&textScroller);
 GPS gps;
@@ -19,8 +21,10 @@ TextBuffer<TX_BUFF_ROWS, TX_LINE_LEN> transmitBuffer;
 
 void setup() 
 {
+	#ifdef DEBUG
 	Serial.begin(9600);
 	while(!Serial);
+	#endif
 	wireless.begin(0);
 }
 
@@ -33,7 +37,9 @@ void loop()
 		char buffer[TX_LINE_LEN];
 		transmitBuffer.getline(buffer);
 		wireless.transmit(buffer, TX_LINE_LEN);
+		#ifdef DEBUG
 		Serial.println(buffer);
+		#endif
 	}
 }
 
