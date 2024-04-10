@@ -3,13 +3,15 @@
 #include <Arduino.h>
 
 
-Barometric::Barometric() : ms5611(MS5611_DEFAULT_ADDRESS)
+Barometric::Barometric() : ms5611(MS5611_DEFAULT_ADDRESS, &Wire1)
 {}
 
 
 void Barometric::begin()
 {    
-    Wire.begin();
+    Wire1.setSDA(MS5611_SDA);
+    Wire1.setSCL(MS5611_SCL);
+    Wire1.begin();
     ms5611.setOversampling(OSR_ULTRA_HIGH);
     ms5611.begin();
 }
